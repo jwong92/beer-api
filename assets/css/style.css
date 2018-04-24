@@ -1,0 +1,40 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    /* font-family: 'Noto Sans', sans-serif; */
+    /* font-family: 'Roboto', sans-serif; */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: #000;
+}
+
+
+/* MAIN HEADER */
+.mr-ml-container {
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+#main-img-container {
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
+}
+
+#logo {
+    max-width: 100%;
+}
+
+.main-para-container {
+    max-width: 600px;
+    display: block;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    color: rgb(86, 96, 108);
+}

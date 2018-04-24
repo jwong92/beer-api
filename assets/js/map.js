@@ -9,7 +9,6 @@ $(document).ready(function(){
 
 
     //GET BREWERIES FILE
-
     $.post('JSON/breweries.json', function(data1, status1) {
         $.post('JSON/beers.json', function(data2, status2) {
             getAdd(data1, data2);
