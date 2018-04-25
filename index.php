@@ -1,5 +1,7 @@
 <?php
+session_start();
 require_once 'apiKey.php';
+require_once 'pages/process.php';
 
 /************************************FUNCTIONS*************************************/
 
@@ -25,11 +27,10 @@ function getAmericanCities($jsonofcities) {
     }
     return $american;
 }
-/************************************FUNCTIONS*************************************/
+/***********************************************************************************/
 
 $can = getCanadianCities($worldwide);
 $usa = getAmericanCities($worldwide);
-
  ?>
 
 <html lang="en">
@@ -60,11 +61,14 @@ $usa = getAmericanCities($worldwide);
 </header>
 
 <main>
+<!-- MAKE SURE USERS ONLY CHOOSE ONE PLACE -->
+<?php echo $message = (!empty($_SESSION['error']['duplicate']) ? $_SESSION['error']['duplicate'] : "") ?>
 <!-- DROPDOWN LIST OF ALL MAJOR CITIES -->
+<form method="post" action="">
     <div class="form-group">
         <label for="canadianCitiesDropDown">Select a Canadian City</label>
         <select class="form-control" id="canadianCitiesDropDown" name="canadianCities">
-            <option value="null">--Canadian Cities--</option>
+            <option value="0">--Canadian Cities--</option>
             <?php if (!empty($can)) : ?>
             <?php foreach ($can as $c) : ?>
                 <option value="<?= $c ?>"><?= $c ?></option>
@@ -74,8 +78,9 @@ $usa = getAmericanCities($worldwide);
     </div>
 
     <div class="form-group">
-        <select class="form-control" id="canadianCitiesDropDown" name="canadianCities">
-            <option value="null">--American Cities--</option>
+        <label for="americanCitiesDropdown">Select an American City</label>
+        <select class="form-control" id="americanCitiesDropdown" name="americanCities">
+            <option value="0">--American Cities--</option>
             <?php if (!empty($usa)) : ?>
             <?php foreach ($usa as $u) : ?>
                 <option value="<?= $u ?>"><?= $u ?></option>
@@ -83,6 +88,23 @@ $usa = getAmericanCities($worldwide);
             <?php endif ?>
         </select>
     </div>
+    <input type="submit" value="Fetch my beers" class="btn btn-light" name="getCities"/>
+</form>
+
+
+
+ <!-- CREATE A JAVASCRIPT VARIABLE THAT WILL HOLD THE JSON FILTER CREATED -->
+<?php if(isset($allFilters)) : ?>
+    <div id="filterBox" style="display: none">
+        <?= $allFilters ?>
+    </div>
+    <script>
+        filters = document.querySelector("#filterBox").textContent;
+    </script>
+<?php endif ?>
+
+
+
 </main>
 
 
@@ -103,3 +125,4 @@ $usa = getAmericanCities($worldwide);
 
 </body>
 </html>
+<?php unset($_SESSION['error']['duplicate']); ?>
