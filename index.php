@@ -103,23 +103,15 @@ $usa = getAmericanCities($worldwide);
     </script>
 <?php endif ?>
 
-
-
-</main>
-
-
-
-
-
-
-
-
-
 <!-- GOOGLE MAP -->
     <div id="map" style='width: 100%; height: 500px; background:grey;'></div>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?= $key ?>&callback=initMap"
     type="text/javascript"></script>
 <!-- END GOOGLE MAP -->
+
+<div id="beerInfoContainer"></div>
+
+</main>
 
     <div id="sandbox"></div>
 
