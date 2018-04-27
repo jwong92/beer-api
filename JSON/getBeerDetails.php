@@ -1,36 +1,43 @@
 <?php 
 $baseUrl = 'https://api.punkapi.com/v2/';
-$abvGT;
-$abvLT;
-$ibuGT;
-$ibuLT;
-$ebcGT;
-$ebcLT;
-$beerName;
-$yeast;
-$hops;
-$malt;
-$food;
+$abvGT = "10";
+$abvLT = "";
+$ibuGT = "";
+$ibuLT = "";
+$beerName = "";
+$yeast = "";
+$hops = "";
+$malt = "";
+$food = "";
+$params['parameters'] = array();
 
-function searchParams($abvGT, $abvLT, $ibuGT, $ibuLT, $ebcGT, $ebcLT, $beerName, $yeast, $hops, $malt, $food) {
-    $params = [
-        'abv_gt' => $abvGT,
-        'abv_lt' => $abvLT,
-        'ibu_gt' => $ibuGT,
-        'ibu_lt' => $ibuLT,
-        'ebc_gt' => $ebcGT,
-        'ebc_lt' => $ebcLT,
-        'beer_name' => $beerName,
-        'yeast' => $yeast,
-        'hops' => $hops,
-        'malt' => $malt,
-        'food' => $food
-    ];
-
-    return $params;
+if($abvGT) {
+    $params['abv_gt'] = $abvGT;
 }
-
-$params = searchParams("", "", "", "", "", "", "Belgian", "", "", "", "");
+if($abvLT) {
+    $params['abv_lt'] = $abvLT;
+}
+if($ibuGT) {
+    $params['abv_lt'] = $ibuGT;
+}
+if($ibuLT) {
+    $params['abv_lt'] = $ibuLT;
+}
+if($beerName) {
+    $params['abv_lt'] = $beerName;
+}
+if($yeast) {
+    $params['abv_lt'] = $yeast;
+}
+if($hops) {
+    $params['abv_lt'] = $hops;
+}
+if($malt) {
+    $params['abv_lt'] = $malt;
+}
+if($food) {
+    $params['abv_lt'] = $food;
+}
 
 function getBeerByName($baseurl, $params) {
     $reqUrl = $baseurl . 'beers?';

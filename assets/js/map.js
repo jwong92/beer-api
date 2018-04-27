@@ -1,6 +1,4 @@
 $(document).ready(function(){
-
-
 })//END PAGE LOAD
 
 
@@ -9,14 +7,16 @@ var filters;
 var map;
 var marker;
 var latlngArr = [];
+var geoData;
 
 //INITIALIZE THE MAP
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 8,
+        zoom: 10,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         maxZoom: 15,
         minZoom: 5
+        // gestureHandling: "none" 
     });
 
     if(filters) {
@@ -25,27 +25,35 @@ function initMap() {
         getUserCenter(map);
     }
 
-    //ADD ALL THE BREWERIES TO THE MAP
-    $.post('JSON/geocode.json', function(data, status) {
-        for(var i=0; i<(Object.keys(data.breweries_geocode).length); i++) {
+    addBreweries(map, marker, latlngArr);
+
+
+    map.addListener('idle', function () {
+        //ADD LISTENER TO MAP. WHEN IDLE, DETERMINE THE VISIBLE MARKERS
+        $.post('JSON/geocode.json', function(data, status) {
+            showVisibleMarkers(map, latlngArr, data);
+        })
+    });
+
+}//END INITIALIZE MAP
+/**************************FUNCTIONS***********************/
+
+//ADD ALL THE BREWERIES TO THE MAP
+function addBreweries(map, marker, latlngArr) {
+    $.post('JSON/geocode.json', function (data, status) {
+        for (var i = 0; i < (Object.keys(data.breweries_geocode).length); i++) {
             var lati = data.breweries_geocode[i].latitude;
             var long = data.breweries_geocode[i].longitude;
-           var latlng = new google.maps.LatLng(lati, long);
+            var latlng = new google.maps.LatLng(lati, long);
             placeMarker(map, latlng, marker);
 
             //PUSH ALL THE GEOCODES TO THE LATLNGARR
             latlngArr.push(latlng);
         }
-
-        //ADD LISTENER TO MAP. WHEN IDLE, DETERMINE THE VISIBLE MARKERS
-        google.maps.event.addListener(map, 'idle', function () {
-            showVisibleMarkers(map, latlngArr, data);
-        });
+        // showVisibleMarkers(map, latlngArr, data);
     });
+}
 
-
-
-    /**************************FUNCTIONS***********************/
     function getUserCenter(map, filter = "") {
         //IF FILTER ISN'T NULL, ASSIGN CENTER TO THE LOCATION
         if(filter != "") {
@@ -134,8 +142,10 @@ function initMap() {
     function showVisibleMarkers(map, latlngArr, geoData) {
         var bounds = map.getBounds();
         var latlngInBounds = [];
+        var cardArr = [];
+        var count = 0;
 
-        //FOREACH OF THE LAT/LNG VALUES
+        // FOREACH OF THE LAT/LNG VALUES
         latlngArr.forEach(ltlg => {
             //IF THE BOUNDS CONTAIN THESE GEOCODES
             if (bounds.contains(ltlg)) {
@@ -146,33 +156,55 @@ function initMap() {
                     if (JSON.stringify(ltlg) == JSON.stringify(boundedLtLg)) {
                         var brew_id = geo.brewery_id;
                         //GET THE BEER INFORMATION
-                        $.post('JSON/beers.json', function(beerData, beerSuccess){
-                            $.post('JSON/getBeerDetails.json', function(bDetailData, bDetailSuccess){
-                                beerData.beers.forEach(beer => {
-                                    bDetailData.
+                        $.post('JSON/beers.json', function(beerData, beerSuccess) {
+                            $.post('JSON/breweries.json', function(brewData, brewSuccess) {
+                                brewData.breweries.forEach(brew => {
+                                    if (brew_id == brew.id) {
+                                        beerData.beers.forEach(beer => {
+                                            if (brew_id == beer.brewery_id) {
+                                                var card = createList(brew.name, brew.address1, beer.name, beer.abv, beer.ibu, beer.descript);
+                                                count++;
+                                                cardArr.push(card);
+                                            }
+                                        })
+                                    }
                                 })
-                            })
+                            })//END BREWERIES POST
+                            if (count == cardArr.length) {
+                                var cardStr = "";
+                                for (var i = 0; i < cardArr.length; i++) {
+                                    cardStr += cardArr[i];
+                                }
+                                $("#accordion").html(cardStr);
+                            }
                         })
                     }
                 })
             }
         })
+    }//END showVisibleMarkers()
 
-        return bounds;
-    }
+    var count = 0;
+    function createList(brewName, brewAdd, name, abv, ibu, descrip) {
+        count++;
+        var card = "";
 
-    function createList() {
-
+        card = "<div class='card'><div class='card-header' id='heading" + count + "'><h5 class='mb-0'><button class='btn btn-link collapsed' data-toggle='collapse' data-target='#collapse" + count + "' aria-expanded='false' aria-controls='collapse" + count + "'>" + brewName + "</button></h5></div><div id='collapse" + count + "' class='collapse' aria-labelledby='heading" + count + "' data-parent='#accordion'><div class='card-body'>" +
+                "<p class='brewAdd'> Address: " + brewAdd + "</p>" +
+                "<p class='beerName'> Beer Name: " + name + "</p>" +
+                "<p class='beerAbv'> Alcohol By Volume: " + abv + "</p>" +
+                "<p class='beerIbu'> International Bitterness Unit: " + ibu + "</p>" +
+                "<p class='beerDescr'> Description: " + descrip + "</p>" +
+                "</div></div></div>"
+        return card;
     }
 
     //GET THE COORDINATES OF ALL THE MARKERS WITHIN THE BOUNDS OF THE MAP
 
     //FROM THE COORDINATES, GET ALL THE BREWERIES VIA BREWERY ID
     //FROM THE BREWERY ID, GET THE BEER INFORMATION FOR EACH BREWERY
-}
-//END INITIALIZE MAP
+// }//END INITIALIZE MAP
 /**************************FUNCTIONS***********************/
-
 
 
 

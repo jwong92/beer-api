@@ -109,7 +109,12 @@ $usa = getAmericanCities($worldwide);
     type="text/javascript"></script>
 <!-- END GOOGLE MAP -->
 
-<div id="beerInfoContainer"></div>
+<div id="beerInfoContainer">
+    <div id="accordion">
+    </div>
+</div>
+
+
 
 </main>
 
